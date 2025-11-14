@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: analysis-sample-benchmark-run1
+spec:
+  completions: 10
+  parallelism: 10
+  template:
+    metadata:
+      labels:
+        app: analysis-sample-benchmark
+        benchmarkRunId: run1
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: analysis-sample
+        image: your-registry/analysis-sample:latest
+        env:
+        - name: URL
+          value: "https://s3.waw4-1.cloudferro.com/EarthCODE/OSCAssets/seasfire/seasfire_v0.4.zarr"
+        - name: LARGE_JOB
+          value: "false"
+        - name: NUM_RUNS
+          value: "1"
+        - name: RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['benchmarkRunId']
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
