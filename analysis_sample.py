@@ -17,6 +17,8 @@ LARGE_JOB = os.getenv("LARGE_JOB", "").lower() in ("1", "true", "yes")
 NUM_RUNS = int(os.getenv("NUM_RUNS", "5"))
 RUN_ID = os.getenv("RUN_ID", "")
 POD_NAME = os.getenv("POD_NAME", "")
+WAIT = int(os.getenv("WAIT_TIME", "5")) if os.getenv("WAIT_TIME", "5").isdigit() else 5
+
 
 # about 1 GB transferred
 def larger_job():
@@ -48,8 +50,7 @@ def net_bytes():
     return c.bytes_recv, c.bytes_sent
 
 def wait_random():
-    mult = 2 if LARGE_JOB else 1
-    max_wait = 60 * math.log(max(NUM_RUNS, 2)) * mult  # avoid log(1)=0 edge case
+    max_wait = WAIT * math.log(max(NUM_RUNS, 2))
     delay = random.uniform(0, max_wait)
     print(f"Start jitter: sleeping {delay:.1f} s (max {max_wait:.1f} s)")
     time.sleep(delay)
